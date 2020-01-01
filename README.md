@@ -228,8 +228,8 @@ Before continuing, it is best to define some concepts that are unique to Kuberne
 - A K8s cluster is divided in [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/). A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
 - When creating an application [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), K8s creates one or several [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
 - Theses Pods are regrouped in [Services](https://kubernetes.io/docs/concepts/services-networking/service/). A Service defines a policy by which to access its targeted pods. For example: 
- - A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
- - A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
+  - A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
+  - A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
 
 The NodePort solution would work for testing purposes but is not reliable in a production environment. And the LoadBalancer works only in the Cloud, not in a local test environment.
 
