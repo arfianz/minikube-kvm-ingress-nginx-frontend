@@ -25,10 +25,10 @@ Executing this blog post code and configuration samples on a local Linux machine
 First, we need to [install Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux). I used the version 1.16:
 
 ```bash
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
-chmod +x ./kubectl
-sudo mv ./kubectl /usr/local/bin/kubectl
-kubectl version -o json
+$ curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
+$ chmod +x ./kubectl
+$ sudo mv ./kubectl /usr/local/bin/kubectl
+$ kubectl version -o json
 ```
 
 The **kubectl version** command should display the 1.16 version.
@@ -40,9 +40,9 @@ You can deploy Kubernetes on your machine, but its preferable to do it in a VM w
 Download and [install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/):
 
 ```bash
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+$ curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
   && chmod +x minikube
-sudo install minikube /usr/local/bin
+$ sudo install minikube /usr/local/bin
 ```
 
 ### KVM and Minikube driver
@@ -55,7 +55,7 @@ Follow this guide to install it on Ubuntu:
 
 To run KVM, you need a processor that supports hardware virtualization. Intel and AMD both have developed extensions for their processors, deemed respectively Intel VT-x (code name Vanderpool) and AMD-V (code name Pacifica). To see if your processor supports one of these, you can review the output from this command: 
 ```bash
-egrep -c '(vmx|svm)' /proc/cpuinfo
+$ egrep -c '(vmx|svm)' /proc/cpuinfo
 ```
  - If **0** it means that your CPU doesn't support hardware virtualization.
  - If **1** or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
@@ -65,7 +65,7 @@ You must see hvm flags in the output.
 Alternatively, you may execute: 
 
 ```bash
-kvm-ok 
+$ kvm-ok 
 ```
 
 which may provide an output like this: 
@@ -97,7 +97,7 @@ Running a 64 bit kernel on the host operating system is recommended but not requ
 To see if your processor is 64-bit, you can run this command: 
 
 ```bash
-egrep -c ' lm ' /proc/cpuinfo
+$ egrep -c ' lm ' /proc/cpuinfo
 ```
 
  - If **0** is printed, it means that your CPU is not 64-bit.
@@ -106,7 +106,7 @@ egrep -c ' lm ' /proc/cpuinfo
 Now see if your running kernel is 64-bit, just issue the following command:
 
 ```bash
-uname -m
+$ uname -m
 ```
 
 **x86_64** indicates a running 64-bit kernel. If you use see i386, i486, i586 or i686, you're running a 32-bit kernel.
@@ -119,7 +119,7 @@ For the following setup, we will assume that you are deploying KVM on a server, 
 You need to install a few packages first: 
 
 ```bash
-sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+$ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
 ```
 
 - **libvirt-bin** provides libvirtd which you need to administer qemu and kvm instances using libvirt
@@ -134,8 +134,8 @@ You might also want to install virt-viewer, for viewing instances.
 The group name is changed to libvirt:
 
 ```bash
-sudo adduser `id -un` libvirt
-Adding user '<username>' to group 'libvirt' ...
+$ sudo adduser `id -un` libvirt
+$ Adding user '<username>' to group 'libvirt' ...
 ```
 
 After this, you need to relogin so that your user becomes an effective member of the libvirtd group. The members of this group can run virtual machines. (You can also 'newgrp kvm' in a terminal, but this will affect only that terminal.) 
@@ -145,7 +145,7 @@ You need to ensure that your username is added to the groups: kvm and libvirtd.
 To check: 
 
 ```bash
-groups
+$ groups
 adm dialout cdrom floppy audio dip video plugdev fuse lpadmin admin sambashare kvm libvirt
 ```
 
@@ -154,13 +154,13 @@ adm dialout cdrom floppy audio dip video plugdev fuse lpadmin admin sambashare k
 You can test if your install has been successful with the following command: 
 
 ```bash
-virsh list --all
+$ virsh list --all
 ```
 
 If on the other hand you get something like this: 
 
 ```bash
-virsh list --all
+$ virsh list --all
 libvir: Remote error : Permission denied
 error: failed to connect to the hypervisor
 ```
@@ -170,28 +170,28 @@ Something is wrong (e.g. you did not relogin) and you probably want to fix this 
 The sock file should have permissions similar to: 
 
 ```bash
-sudo ls -la /var/run/libvirt/libvirt-sock
+$ sudo ls -la /var/run/libvirt/libvirt-sock
 srwxrwx--- 1 root libvirt 0 2010-08-24 14:54 /var/run/libvirt/libvirt-sock
 ```
 
 Also, /dev/kvm needs to be in the right group. If you see: 
 
 ```bash
-ls -l /dev/kvm
+$ ls -l /dev/kvm
 crw-rw----+ 1 root root 10, 232 Jul  8 22:04 /dev/kvm
 ```
 
 You might experience problems when creating a virtual machine. Change the device's group to kvm/libvirtd instead: 
 
 ```bash
-sudo chown root:libvirt /dev/kvm
+$ sudo chown root:libvirt /dev/kvm
 ```
 
 Now you need to either relogin or restart the kernel modules: 
 
 ```bash
-rmmod kvm
-modprobe -a kvm
+$ rmmod kvm
+$ modprobe -a kvm
 ```
 
 #### 6. Optional: Install virt-manager (graphical user interface)
@@ -199,7 +199,7 @@ modprobe -a kvm
 If you are working on a desktop computer you might want to install a GUI tool to manage virtual machines. 
 
 ```bash
-sudo apt-get install virt-manager
+$ sudo apt install virt-manager
 ```
 
 Virtual Machine Manager will appear in Applications -> System Tools menu. First create a new connection to local QEMU instance from File -> Add Connection menu. Localhost (QEMU) or QEMU/KVM should appear in the virtual machine list. Note: there already exist Localhost (QEMU Usermode) connection but this does not work at least on Ubuntu 10.04.
@@ -208,15 +208,15 @@ Virtual Machine Manager will appear in Applications -> System Tools menu. First 
 #### Finally [install the KVM driver](https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver):
 
 ```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
-chmod +x docker-machine-driver-kvm2
-sudo mv docker-machine-driver-kvm2 /usr/local/bin/
+$ curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
+$ chmod +x docker-machine-driver-kvm2
+$ sudo mv docker-machine-driver-kvm2 /usr/local/bin/
 ```
 
 Then, launch Minikube using the KVM2 driver:
 
 ```bash
-minikube start --vm-driver=kvm2
+$ minikube start --vm-driver=kvm2
 ```
 
 ### K8S Definitions
@@ -264,8 +264,8 @@ To launch the complete stack:
 |   NAMESPACE   |         NAME         |              URL               |
 |---------------|----------------------|--------------------------------|
 | default       | kubernetes           | No node port                   |
-| ingress-nginx | ingress-nginx        | http://192.168.39.146:80       |
-|               |                      | http://192.168.39.146:443      |
+| ingress-nginx | ingress-nginx        | http://192.168.39.51:80        |
+|               |                      | http://192.168.39.51:443       |
 | kube-system   | kube-dns             | No node port                   |
 | kube-system   | kubernetes-dashboard | No node port                   |
 |---------------|----------------------|--------------------------------|
@@ -307,25 +307,41 @@ We use the **kubectl apply** [command](https://kubernetes.io/docs/tasks/manage-k
 So, the first command to execute automatically installs all components required on the K8s cluster:
 
 ```bash
-kubectl apply -f mandatory.yaml
+$ kubectl apply -f random/mandatory.yaml
+namespace/ingress-nginx created
+configmap/nginx-configuration created
+configmap/tcp-services created
+configmap/udp-services created
+serviceaccount/nginx-ingress-serviceaccount created
+clusterrole.rbac.authorization.k8s.io/nginx-ingress-clusterrole created
+role.rbac.authorization.k8s.io/nginx-ingress-role created
+rolebinding.rbac.authorization.k8s.io/nginx-ingress-role-nisa-binding created
+clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress-clusterrole-nisa-binding created
+deployment.apps/nginx-ingress-controller created
+limitrange/ingress-nginx created
 ```
 
 All the related resources are deployed in a dedicated namespace called ingress-nginx. Check that the NGinx pod is started with the following command (press **CTRL + C** when the container status is Running):
 
 ```bash
-kubectl get pods -n ingress-nginx --watch
+$ kubectl get pods -n ingress-nginx --watch
+NAME                                       READY   STATUS              RESTARTS   AGE
+nginx-ingress-controller-9dfc54f55-hr4cp   0/1     ContainerCreating   0          20s
 ```
 
 Our Ingress Controller is started, but not yet accessible externally from our K8s cluster. **We need to create a NodePort Service to expose it to the outside world**.
 
 ```bash
-kubectl apply -f service-nodeport.yaml
+$ kubectl apply -f ingress/service-nodeport.yaml
+service/ingress-nginx created
 ```
 
 List all services in the ingress-nginx namespace:
 
 ```bash
-kubectl get services -n ingress-nginx
+$ kubectl get services -n ingress-nginx
+NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                     AGE
+ingress-nginx   NodePort   10.96.133.33   <none>        80:7828/TCP,443:24516/TCP   21s
 ```
 
 Here we see that the port 80 is dynamically mapped to the 32112 (you will most probably get a different mapping).
@@ -333,12 +349,22 @@ Here we see that the port 80 is dynamically mapped to the 32112 (you will most p
 Listing all exposed services using Minikube confirms that the Ingress Controller is available:
 
 ```bash
-minikube service list
+$ minikube service list
+|----------------------|---------------------------|--------------------------------|-----|
+|      NAMESPACE       |           NAME            |          TARGET PORT           | URL |
+|----------------------|---------------------------|--------------------------------|-----|
+| default              | kubernetes                | No node port                   |     |
+| ingress-nginx        | ingress-nginx             | http://192.168.39.51:7828      |     |
+|                      |                           | http://192.168.39.51:24516     |     |
+| kube-system          | kube-dns                  | No node port                   |     |
+| kubernetes-dashboard | dashboard-metrics-scraper | No node port                   |     |
+| kubernetes-dashboard | kubernetes-dashboard      | No node port                   |     |
+|----------------------|---------------------------|--------------------------------|-----|
 ```
 
-192.168.39.12 is the IP address allocated to our Minikube VM. You can also get it with the minikube ip command.
+192.168.39.51 is the IP address allocated to our Minikube VM. You can also get it with the minikube ip command.
 
-Open the URL http://192.168.39.12:32112 in a web browser, you will see a NGINX 404 page:
+Open the URL http://192.168.39.51:7828 in a web browser, you will see a NGINX 404 page:
 
 ![404](./ingress-nginx-404.png?raw=true)
 
@@ -353,62 +379,59 @@ By default, Kubernetes is configured to expose NodePort services on the port ran
 Start by deleting our existing minikube VM with the command:
 
 ```bash
-minikube delete
+$ minikube delete
 ```
 
 Then restart it with the option **apiserver.service-node-port-range=1-30000**:
 
 ```bash
-minikube start --vm-driver=kvm2 --extra-config=apiserver.service-node-port-range=1-30000
+$ minikube start --vm-driver=kvm2 --extra-config=apiserver.service-node-port-range=1-30000
+😄  minikube v1.6.2 on Ubuntu 18.04
+✨  Selecting 'kvm2' driver from user configuration (alternates: [virtualbox none])
+💿  Downloading VM boot image ...
+    > minikube-v1.6.0.iso.sha256: 65 B / 65 B [--------------] 100.00% ? p/s 0s
+    > minikube-v1.6.0.iso: 150.93 MiB / 150.93 MiB [ 100.00% 1.01 MiB p/s 2m30s
+🔥  Creating kvm2 VM (CPUs=2, Memory=2000MB, Disk=20000MB) ...
+🐳  Preparing Kubernetes v1.17.0 on Docker '19.03.5' ...
+    ▪ apiserver.service-node-port-range=1-30000
+💾  Downloading kubelet v1.17.0
+💾  Downloading kubeadm v1.17.0
+🚜  Pulling images ...
+🚀  Launching Kubernetes ... 
+⌛  Waiting for cluster to come online ...
+🏄  Done! kubectl is now configured to use "minikube"
+
 ```
 
 Start the Ingress Controller and wait for it to start (kubectl get pods -n ingress-nginx --watch):
 
 ```bash
-kubectl apply -f mandatory.yaml
+$ kubectl apply -f ingress/mandatory.yaml
 ```
 
 Now that we can allocate the port 80, we also need to configure the NodePort service and expose the Ingress controller on this port. First download the configuration file:
 And update it (**service-nodeport.yaml**), to add **nodePort: 80** for the http entry and **nodePort: 443** for the https one:
 
-```bash
-nano service-nodeport.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: ingress-nginx
-  namespace: ingress-nginx
-  labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-spec:
-  type: NodePort
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-      protocol: TCP
-      nodePort: 80
-    - name: https
-      port: 443
-      targetPort: 443
-      protocol: TCP
-      nodePort: 443
-  selector:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-```
-
 Apply the updated configuration:
 
 ```bash
-kubectl apply -f service-nodeport.yaml 
+$ kubectl apply -f ingress/service-nodeport.yaml 
 ```
 
 Our Ingress Controller is now available on port 80 for HTTP and 443 for HTTPS:
 
 ```bash
-minikube service list
+$ minikube service list
+|----------------------|---------------------------|--------------------------------|-----|
+|      NAMESPACE       |           NAME            |          TARGET PORT           | URL |
+|----------------------|---------------------------|--------------------------------|-----|
+| default              | kubernetes                | No node port                   |     |
+| ingress-nginx        | ingress-nginx             | http://192.168.39.51:80        |     |
+|                      |                           | http://192.168.39.51:443       |     |
+| kube-system          | kube-dns                  | No node port                   |     |
+| kubernetes-dashboard | dashboard-metrics-scraper | No node port                   |     |
+| kubernetes-dashboard | kubernetes-dashboard      | No node port                   |     |
+|----------------------|---------------------------|--------------------------------|-----|
 ```
 
 You may think “Why don’t we expose our frontend application directly using NodePort Service?”. That could also be done and it’s probably the simplest solution … for testing purpose. But it’s not manageable in a production environment with several frontend applications and backends running.
@@ -424,13 +447,13 @@ Remember that you can list Pods with the command **kubectl get pods -n ingress-n
 In case your Pod is stuck with the status **CreatingContainer**, you can display a list of events that may let you know what is going on with the **describe** command:
 
 ```bash
-kubectl describe pod nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
+$ kubectl describe pod nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
 ```
 
 Once a Pod is started, you can display the container logs with the command:
 
 ```bash
-kubectl logs nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
+$ kubectl logs nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
 ```
 
 ## Deploy an Angular 8 Frontend
@@ -443,75 +466,37 @@ You can also use your own Docker image. Be warned though that Kraken’s adminis
 
 ### How to Create a Deployment?
 
-Start by creating the following configuration file, named frontend-deployment.yaml:
-
-```bash
-nano frontend-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: frontend-deployment
-spec:
-  selector:
-    matchLabels:
-      app: frontend
-  minReadySeconds: 5
-  template:
-    metadata:
-      labels:
-        app: frontend
-    spec:
-      containers:
-        - image: octoperf/kraken-administration-ui:1.2.1
-          name: frontend
-          ports:
-            - containerPort: 80
-```
+Start by applying the following configuration file, named **frontend-deployment.yaml**:
 
 **A Kubernetes Deployment is responsible for starting Pods on available cluster Nodes**. Since our Pods contain a Docker container, the file above specifies the image, name and port mapping to use.
 
 Apply the created configuration with the command:
 
 ```bash
-kubectl apply -f frontend-deployment.yaml
+$ kubectl apply -f frontend/frontend-deployment.yaml
 ```
 
 Finally, check that the deployment has started one pod:
 
 ```bash
-kubectl get deployments
+$ kubectl get deployments
 ```
 Here we can see the **READY 1/1** column, it’s the number of Pods ready and the total that must be started.
 
 ### How to Expose a Deployment with a Service?
 
-Like for the Deployment, create a configuration file and apply it. The configuration file is named **frontend-service.yaml**:
-
-```bash
-nano frontend-service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend-service
-spec:
-  selector:
-    app: frontend
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-```
+Like for the Deployment, applying configuration file and apply it. The configuration file is named **frontend-service.yaml**:
 
 Apply it:
 
 ```bash
-kubectl apply -f frontend-service.yaml 
+$ kubectl apply -f frontend/frontend-service.yaml 
 ```
 
 There is no type and no nodePort defined in this service. We only use it to **regroup a logical set of Pods and make them accessible from inside the K8s cluster**.
 
 ```bash
-kubectl get services
+$ kubectl get services
 ```
 
 Here we can see that the **PORT(S)** column display only **80/TCP** for the frontend-service. Not the usual **80:30001/TCP** notation for an exposed port.
@@ -520,29 +505,7 @@ Here we can see that the **PORT(S)** column display only **80/TCP** for the fron
 
 If not already done, you first need to have installed an Ingress Controller.
 
-Then create the following configuration file named **frontend-ingress.yaml**:
-
-```bash
-nano frontend-ingress.yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "12h"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  name: frontend-ingress
-  namespace: default
-spec:
-  rules:
-    - http:
-        paths:
-          - backend:
-              serviceName: frontend-service
-              servicePort: 80
-            path: /administration(/|$)(.*)
-```
+Then apply the following configuration file named **frontend-ingress.yaml**:
 
 Ingress resources configuration is done using annotations:
 - **ingress.class** should always be **"nginx"** unless you have [multiple Ingress Controllers running](https://kubernetes.github.io/ingress-nginx/user-guide/multiple-ingress/),
@@ -553,13 +516,13 @@ Ingress resources configuration is done using annotations:
 Apply the configuration:
 
 ```bash
-kubectl apply -f frontend-ingress.yaml 
+$ kubectl apply -f frontend/frontend-ingress.yaml 
 ```
 
 And check that it is OK:
 
 ```bash
-kubectl get ingresses
+$ kubectl get ingresses
 ```
 
 ## Testing the Installation
@@ -567,16 +530,27 @@ kubectl get ingresses
 If you configured your Ingress Controller to be exposed on port 80, the **minikube service list** will display a similar result:
 
 ```bash
-minikube service list
+$ minikube service list
+|----------------------|---------------------------|--------------------------------|-----|
+|      NAMESPACE       |           NAME            |          TARGET PORT           | URL |
+|----------------------|---------------------------|--------------------------------|-----|
+| default              | frontend-service          | No node port                   |     |
+| default              | kubernetes                | No node port                   |     |
+| ingress-nginx        | ingress-nginx             | http://192.168.39.51:80        |     |
+|                      |                           | http://192.168.39.51:443       |     |
+| kube-system          | kube-dns                  | No node port                   |     |
+| kubernetes-dashboard | dashboard-metrics-scraper | No node port                   |     |
+| kubernetes-dashboard | kubernetes-dashboard      | No node port                   |     |
+|----------------------|---------------------------|--------------------------------|-----|
 ```
 
 You can display the port mapping with the following command otherwise:
 
 ```bash
-kubectl get services -n ingress-nginx
+$ kubectl get services -n ingress-nginx
 ```
 
-Opening this URL http://192.168.39.162:80/administration (the IP address is probably different for you) in your Web browser display the Kraken administration UI:
+Opening this URL http://192.168.39.51:80/administration (the IP address is probably different for you) in your Web browser display the Kraken administration UI:
 
 ![administration](kraken-administration.png?raw=true)
 
