@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - image: octoperf/kraken-administration-ui:1.2.1
+          name: frontend
+          ports:
+            - containerPort: 80
