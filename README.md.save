@@ -140,13 +140,13 @@ Adding user '<username>' to group 'libvirt' ...
 
 After this, you need to relogin so that your user becomes an effective member of the libvirtd group. The members of this group can run virtual machines. (You can also 'newgrp kvm' in a terminal, but this will affect only that terminal.) 
 
-You need to ensure that your username is added to the groups: kvm and libvirtd.
+You need to ensure that your username is added to the groups: kvm and libvirt.
 
 To check: 
 
 ```bash
 groups
-adm dialout cdrom floppy audio dip video plugdev fuse lpadmin admin sambashare kvm libvirt
+<username> adm cdrom sudo dip plugdev lpadmin sambashare libvirt docker
 ```
 
 #### 5. Verify Installation
@@ -199,7 +199,7 @@ modprobe -a kvm
 If you are working on a desktop computer you might want to install a GUI tool to manage virtual machines. 
 
 ```bash
-sudo apt-get install virt-manager
+sudo apt install virt-manager
 ```
 
 Virtual Machine Manager will appear in Applications -> System Tools menu. First create a new connection to local QEMU instance from File -> Add Connection menu. Localhost (QEMU) or QEMU/KVM should appear in the virtual machine list. Note: there already exist Localhost (QEMU Usermode) connection but this does not work at least on Ubuntu 10.04.
