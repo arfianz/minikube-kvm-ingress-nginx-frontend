@@ -217,6 +217,19 @@ Then, launch Minikube using the KVM2 driver:
 
 ```bash
 $ minikube start --vm-driver=kvm2
+😄  minikube v1.6.2 on Ubuntu 18.04
+✨  Selecting 'kvm2' driver from user configuration (alternates: [virtualbox none])
+💿  Downloading VM boot image ...
+    > minikube-v1.6.0.iso.sha256: 65 B / 65 B [--------------] 100.00% ? p/s 0s
+    > minikube-v1.6.0.iso: 150.93 MiB / 150.93 MiB [ 100.00% 1.01 MiB p/s 2m30s
+🔥  Creating kvm2 VM (CPUs=2, Memory=2000MB, Disk=20000MB) ...
+🐳  Preparing Kubernetes v1.17.0 on Docker '19.03.5' ...
+💾  Downloading kubelet v1.17.0
+💾  Downloading kubeadm v1.17.0
+🚜  Pulling images ...
+🚀  Launching Kubernetes ... 
+⌛  Waiting for cluster to come online ...
+🏄  Done! kubectl is now configured to use "minikube"
 ```
 
 ### K8S Definitions
