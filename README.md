@@ -5,8 +5,8 @@
 [Kraken](https://kraken.octoperf.com/) is a [load testing](https://en.wikipedia.org/wiki/Load_testing) solution currently deployed on Docker. In order to use several injectors ([Gatling](https://en.wikipedia.org/wiki/Gatling_(software))) while running a load test, its next version might rely on Kubernetes.
 
 	Kubernetes (commonly referred to as “K8s”) is an open source system that aims to provide a platform for automating the deployment, scalability and implementation of application containers on server clusters. It works with a variety of container technologies, and is often used with Docker. It was originally designed by Google and then offered to the Cloud Native Computing Foundation.
-* Test
-  * This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
+
+This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
 
 While being the most complex kind of [Kubernetes object management](https://kubernetes.io/docs/concepts/overview/working-with-objects/object-management/), the declarative object configuration allows to apply and revert configuration updates. Also, configuration files can easily be shared or saved into a version control system like Git.
 
@@ -57,8 +57,8 @@ To run KVM, you need a processor that supports hardware virtualization. Intel an
 ```bash
 egrep -c '(vmx|svm)' /proc/cpuinfo
 ```
-If 0 it means that your CPU doesn't support hardware virtualization.
-If 1 or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
+ - If 0 it means that your CPU doesn't support hardware virtualization.
+ - If 1 or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
 
 You must see hvm flags in the output.
 
@@ -100,8 +100,8 @@ To see if your processor is 64-bit, you can run this command:
 egrep -c ' lm ' /proc/cpuinfo
 ```
 
-If 0 is printed, it means that your CPU is not 64-bit.
-If 1 or higher, it is. Note: lm stands for Long Mode which equates to a 64-bit CPU.
+ - If 0 is printed, it means that your CPU is not 64-bit.
+ - If 1 or higher, it is. Note: lm stands for Long Mode which equates to a 64-bit CPU.
 
 Now see if your running kernel is 64-bit, just issue the following command:
 
@@ -228,8 +228,8 @@ Before continuing, it is best to define some concepts that are unique to Kuberne
 - A K8s cluster is divided in [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/). A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
 - When creating an application [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), K8s creates one or several [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
 - Theses Pods are regrouped in [Services](https://kubernetes.io/docs/concepts/services-networking/service/). A Service defines a policy by which to access its targeted pods. For example: 
--- A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
--- A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
+ - A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
+ - A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
 
 The NodePort solution would work for testing purposes but is not reliable in a production environment. And the LoadBalancer works only in the Cloud, not in a local test environment.
 
