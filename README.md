@@ -6,11 +6,11 @@
 
 	Kubernetes (commonly referred to as “K8s”) is an open source system that aims to provide a platform for automating the deployment, scalability and implementation of application containers on server clusters. It works with a variety of container technologies, and is often used with Docker. It was originally designed by Google and then offered to the Cloud Native Computing Foundation.
 
-This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
+This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the **kubectl** command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an **Angular 8 frontend application** served by an **NGinx Ingress controller**.
 
 While being the most complex kind of [Kubernetes object management](https://kubernetes.io/docs/concepts/overview/working-with-objects/object-management/), the declarative object configuration allows to apply and revert configuration updates. Also, configuration files can easily be shared or saved into a version control system like Git.
 
-But before going to the configuration of our frontend and its proxy, let’s see what is needed in order to follow this tutorial.
+But before going to the **configuration of our frontend** and its **proxy**, let’s see what is needed **in order to follow this tutorial**.
 
 ## Prerequisites
 
@@ -31,11 +31,11 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 kubectl version -o json
 ```
 
-The kubectl version command should display the 1.16 version.
+The **kubectl version** command should display the 1.16 version.
 
 ### Install Minikube
 
-You can deploy Kubernetes on your machine, but its preferable to do it in a VM when developing. It’s easier to restart from scratch if you made a mistake, or try several configurations without being impacted by remaining objects. Minikube is the tool to test Kubernetes or develop locally.
+You can deploy Kubernetes on your machine, but its preferable to do it in a VM when developing. It’s easier to restart from scratch if you made a mistake, or try several configurations without being impacted by remaining objects. **Minikube is the tool to test Kubernetes or develop locally**.
 
 Download and [install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/):
 
@@ -47,7 +47,7 @@ sudo install minikube /usr/local/bin
 
 ### KVM and Minikube driver
 
-Minikube wraps Kubernetes in a Virtual Machine, so it needs an hypervisor: VirtualBox or KVM. Since I do my tests on a small portable computer, I prefer to use the lighter virtualization solution: KVM.
+Minikube wraps Kubernetes in a Virtual Machine, so it needs an hypervisor: VirtualBox or KVM. Since I do my tests on a small [portable computer](https://octoperf.com/blog/2018/11/07/thinkpad-t440p-buyers-guide/), I prefer to use the lighter virtualization solution: KVM.
 
 Follow this guide to install it on Ubuntu:
 
@@ -57,8 +57,8 @@ To run KVM, you need a processor that supports hardware virtualization. Intel an
 ```bash
 egrep -c '(vmx|svm)' /proc/cpuinfo
 ```
- - If 0 it means that your CPU doesn't support hardware virtualization.
- - If 1 or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
+ - If **0** it means that your CPU doesn't support hardware virtualization.
+ - If **1** or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
 
 You must see hvm flags in the output.
 
@@ -100,8 +100,8 @@ To see if your processor is 64-bit, you can run this command:
 egrep -c ' lm ' /proc/cpuinfo
 ```
 
- - If 0 is printed, it means that your CPU is not 64-bit.
- - If 1 or higher, it is. Note: lm stands for Long Mode which equates to a 64-bit CPU.
+ - If **0** is printed, it means that your CPU is not 64-bit.
+ - If **1** or higher, it is. Note: lm stands for Long Mode which equates to a 64-bit CPU.
 
 Now see if your running kernel is 64-bit, just issue the following command:
 
@@ -109,7 +109,7 @@ Now see if your running kernel is 64-bit, just issue the following command:
 uname -m
 ```
 
-x86_64 indicates a running 64-bit kernel. If you use see i386, i486, i586 or i686, you're running a 32-bit kernel.
+**x86_64** indicates a running 64-bit kernel. If you use see i386, i486, i586 or i686, you're running a 32-bit kernel.
 Note: x86_64 is synonymous with amd64. 
 
 #### 3. Installation of KVM
@@ -122,10 +122,10 @@ You need to install a few packages first:
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
 ```
 
-- libvirt-bin provides libvirtd which you need to administer qemu and kvm instances using libvirt
-- qemu-kvm (kvm in Karmic and earlier) is the backend
-- ubuntu-vm-builder powerful command line tool for building virtual machines
-- bridge-utils provides a bridge from your network to the virtual machines 
+- **libvirt-bin** provides libvirtd which you need to administer qemu and kvm instances using libvirt
+- **qemu-kvm** (kvm in Karmic and earlier) is the backend
+- **ubuntu-vm-builder** powerful command line tool for building virtual machines
+- **bridge-utils** provides a bridge from your network to the virtual machines 
 
 You might also want to install virt-viewer, for viewing instances. 
 
@@ -225,10 +225,10 @@ Before continuing, it is best to define some concepts that are unique to Kuberne
 
 ![k8s](./k8s-cluster.png?raw=true)
 
-- A K8s cluster is divided in [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/). A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
-- When creating an application [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), K8s creates one or several [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
-- Theses Pods are regrouped in [Services](https://kubernetes.io/docs/concepts/services-networking/service/). A Service defines a policy by which to access its targeted pods. For example: 
-  - A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
+- **A K8s cluster is divided** in [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/). A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
+- When creating an application [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), **K8s creates one or several** [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
+- **Theses Pods are regrouped** in [Services](https://kubernetes.io/docs/concepts/services-networking/service/). A Service defines a policy by which to access its targeted pods. For example: 
+  - A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting **<NodeIP>:<NodePort>**.
   - A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
 
 The NodePort solution would work for testing purposes but is not reliable in a production environment. And the LoadBalancer works only in the Cloud, not in a local test environment.
@@ -239,7 +239,7 @@ The solution that fits any use case is to install an Ingress Controller and use 
 
 Clone this repository.
 It contains several K8s configuration files for Ingress and the Angular frontend.
-It also contains a Makefile. Here is an extract of this file:
+It also contains a **Makefile**. Here is an extract of this file:
 
 ```bash
 start:
@@ -272,36 +272,36 @@ To launch the complete stack:
 |---------------|----------------------|--------------------------------|
 ```
 
-Open the URL of the ingress-nginx service with /administration appended: http://192.168.39.146:80/administration and check that the frontend is running and served by the NGINX proxy.
+Open the URL of the **ingress-nginx** service with /administration appended: http://192.168.39.146:80/administration and check that the frontend is running and served by the NGINX proxy.
 
 ## Install and Configure NGinx Ingress
 
 The concept of Ingress is split in two parts:
-- The Ingress Controller, it’s some kind of wrapper for an HTTP proxy,
+- The [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), it’s some kind of wrapper for an HTTP proxy,
 - Ingress resources/rules that expose HTTP and HTTPS routes from outside the cluster to services within the cluster, depending on traffic rules.
 
 ### Motivation
 
 In the current install of Kraken, we already use HAProxy to redirect the traffic to a specific Docker container. It’s the same principle here, except that you don’t configure the proxy directly but specify Ingress configuration objects. The proxy configuration is automatically updated for you by the controller.
 
-There is one issue with Ingress though, the configuration is done using annotation that are specific to the underlying controller. So, unfortunately you cannot change the controller implementation without updating the Ingress resources.
+**There is one issue with Ingress though, the configuration is done using annotation that are specific to the underlying controller**. So, unfortunately you cannot change the controller implementation without updating the Ingress resources.
 
 The simpler Ingress controller is the one maintained by Kubernetes: Kubernetes NGinx, not to be confused with the one maintained by the NGINX team.
 
 	Note: I also tried to use HAproxy’s Ingress Controller without success. I could not configure the URL Rewrite on this one.
 
 Using a proxy and an Ingress controller allows us to serve multiple applications on the same hostname and port (80⁄443) but with different paths. For example, with Kakren we have:
-- /administration for the administration frontend,
-- /gatling for the load testing frontend,
-- /api/storage for the file system storage backend,
-- /api/command for the command execution backend,
+- **/administration** for the administration frontend,
+- **/gatling** for the load testing frontend,
+- **/api/storage** for the file system storage backend,
+- **/api/command** for the command execution backend,
 - etc.
 
 ### Ingress Controller Installation
 
 Let’s get our hands dirty and install an NGINX ingress controller.
 
-We use the kubectl apply command. It creates all resources defined in the given file. This file can be on the local file system or accessed using a URL.
+We use the **kubectl apply** [command](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/#how-to-create-objects). It creates all resources defined in the given file. This file can be on the local file system or accessed using a URL.
 
 	Note: Skip directly to the next chapter if you want to expose your Ingress Controller on port 80.
 
@@ -311,13 +311,13 @@ So, the first command to execute automatically installs all components required 
 kubectl apply -f mandatory.yaml
 ```
 
-All the related resources are deployed in a dedicated namespace called ingress-nginx. Check that the NGinx pod is started with the following command (press CTRL + C when the container status is Running):
+All the related resources are deployed in a dedicated namespace called ingress-nginx. Check that the NGinx pod is started with the following command (press **CTRL + C** when the container status is Running):
 
 ```bash
 kubectl get pods -n ingress-nginx --watch
 ```
 
-Our Ingress Controller is started, but not yet accessible externally from our K8s cluster. We need to create a NodePort Service to expose it to the outside world.
+Our Ingress Controller is started, but not yet accessible externally from our K8s cluster. **We need to create a NodePort Service to expose it to the outside world**.
 
 ```bash
 kubectl apply -f service-nodeport.yaml
@@ -357,7 +357,7 @@ Start by deleting our existing minikube VM with the command:
 minikube delete
 ```
 
-Then restart it with the option apiserver.service-node-port-range=1-30000:
+Then restart it with the option **apiserver.service-node-port-range=1-30000**:
 
 ```bash
 minikube start --vm-driver=kvm2 --extra-config=apiserver.service-node-port-range=1-30000
@@ -370,7 +370,7 @@ kubectl apply -f mandatory.yaml
 ```
 
 Now that we can allocate the port 80, we also need to configure the NodePort service and expose the Ingress controller on this port. First download the configuration file:
-And update it (service-nodeport.yaml), to add nodePort: 80 for the http entry and nodePort: 443 for the https one:
+And update it (**service-nodeport.yaml**), to add **nodePort: 80** for the http entry and **nodePort: 443** for the https one:
 
 ```bash
 nano service-nodeport.yaml
@@ -416,13 +416,13 @@ You may think “Why don’t we expose our frontend application directly using N
 
 ### Troubleshooting
 
-Remember that you can list Pods with the command kubectl get pods -n ingress-nginx --watch.
+Remember that you can list Pods with the command **kubectl get pods -n ingress-nginx --watch**.
 
-- The -n parameter specifies the namespace, here ingress-nginx which is used by the NGinx Ingress controller,
-- The --watch parameter refreshes the Pods list every time a modification occurs,
-- Use the parameter -A to list resources for all namespaces.
+- The **-n** parameter specifies the namespace, here ingress-nginx which is used by the NGinx Ingress controller,
+- The **--watch** parameter refreshes the Pods list every time a modification occurs,
+- Use the parameter **-A** to list resources for all namespaces.
 
-In case your Pod is stuck with the status CreatingContainer, you can display a list of events that may let you know what is going on with the describe command:
+In case your Pod is stuck with the status **CreatingContainer**, you can display a list of events that may let you know what is going on with the **describe** command:
 
 ```bash
 kubectl describe pod nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
@@ -438,9 +438,9 @@ kubectl logs nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
 
 ### Angular8 Frontend Docker Image
 
-We are about to use Kraken’s administration Docker image: octoperf/kraken-administration-ui. Check out this blog post to know more about the creation of a Docker image for an Angular app: Packaging Angular apps as docker images.
+We are about to use [Kraken’s administration](https://kraken.octoperf.com/administration/) Docker image: [octoperf/kraken-administration-ui](https://hub.docker.com/r/octoperf/kraken-administration-ui). Check out this blog post to know more about the creation of a Docker image for an Angular app: [Packaging Angular apps as docker images](https://octoperf.com/blog/2019/08/22/kraken-angular-workspace-multi-application-project/#packaging-angular-apps-as-docker-images).
 
-You can also use your own Docker image. Be warned though that Kraken’s administration image is configured to use the specific BasePath /administration. We will need to configure an URL rewrite rule in our Ingress object. Check this chapter to know more about this: How to serve multiple Angular app with HAProxy.
+You can also use your own Docker image. Be warned though that Kraken’s administration image is configured to use the specific BasePath **/administration**. We will need to configure an URL rewrite rule in our Ingress object. Check this chapter to know more about this: [How to serve multiple Angular app with HAProxy](https://octoperf.com/blog/2019/08/22/kraken-angular-workspace-multi-application-project/#how-to-serve-multiple-angular-applications-with-haproxy).
 
 ### How to Create a Deployment?
 
@@ -469,7 +469,7 @@ spec:
             - containerPort: 80
 ```
 
-A Kubernetes Deployment is responsible for starting Pods on available cluster Nodes. Since our Pods contain a Docker container, the file above specifies the image, name and port mapping to use.
+**A Kubernetes Deployment is responsible for starting Pods on available cluster Nodes**. Since our Pods contain a Docker container, the file above specifies the image, name and port mapping to use.
 
 Apply the created configuration with the command:
 
@@ -482,10 +482,11 @@ Finally, check that the deployment has started one pod:
 ```bash
 kubectl get deployments
 ```
+Here we can see the **READY 1/1** column, it’s the number of Pods ready and the total that must be started.
 
 ### How to Expose a Deployment with a Service?
 
-Like for the Deployment, create a configuration file and apply it. The configuration file is named frontend-service.yaml:
+Like for the Deployment, create a configuration file and apply it. The configuration file is named **frontend-service.yaml**:
 
 ```bash
 nano frontend-service.yaml
@@ -508,19 +509,19 @@ Apply it:
 kubectl apply -f frontend-service.yaml 
 ```
 
-There is no type and no nodePort defined in this service. We only use it to regroup a logical set of Pods and make them accessible from inside the K8s cluster.
+There is no type and no nodePort defined in this service. We only use it to **regroup a logical set of Pods and make them accessible from inside the K8s cluster**.
 
 ```bash
 kubectl get services
 ```
 
-Here we can see that the PORT(S) column display only 80/TCP for the frontend-service. Not the usual 80:30001/TCP notation for an exposed port.
+Here we can see that the **PORT(S)** column display only **80/TCP** for the frontend-service. Not the usual **80:30001/TCP** notation for an exposed port.
 
 ### How to Create an Ingress Object to Publicly Expose an App?
 
 If not already done, you first need to have installed an Ingress Controller.
 
-Then create the following configuration file named frontend-ingress.yaml:
+Then create the following configuration file named **frontend-ingress.yaml**:
 
 ```bash
 nano frontend-ingress.yaml
@@ -545,10 +546,10 @@ spec:
 ```
 
 Ingress resources configuration is done using annotations:
-- ingress.class should always be "nginx" unless you have multiple Ingress Controllers running,
-- rewrite-target is used to skip the /administration part or the URL when forwarding requests to the frontend Docker container (URL Rewrite documentation),
-- proxy-read-timeout sets a timeout for SSE connections,
-- ssl-redirect is used to deactivate Https redirection since we are not specifying a host: The default-server is called without any host, this server is configured with a self-signed certificate (Would display a big security warning in your browser).
+- **ingress.class** should always be **"nginx"** unless you have [multiple Ingress Controllers running](https://kubernetes.github.io/ingress-nginx/user-guide/multiple-ingress/),
+- **rewrite-target** is used to skip the **/administration** part or the URL when forwarding requests to the frontend Docker container ([URL Rewrite documentation](https://kubernetes.github.io/ingress-nginx/examples/rewrite/)),
+- **proxy-read-timeout** sets a timeout for [SSE connections](https://stackoverflow.com/questions/21630509/server-sent-events-connection-timeout-on-node-js-via-nginx),
+- **ssl-redirect** is used to deactivate Https redirection since we are not specifying a host: The default-server is called without any host, this server is configured with a self-signed certificate (Would display a big security warning in your browser).
 
 Apply the configuration:
 
@@ -564,7 +565,7 @@ kubectl get ingresses
 
 ## Testing the Installation
 
-If you configured your Ingress Controller to be exposed on port 80, the minikube service list will display a similar result:
+If you configured your Ingress Controller to be exposed on port 80, the **minikube service list** will display a similar result:
 
 ```bash
 minikube service list
@@ -580,3 +581,17 @@ Opening this URL http://192.168.39.162:80/administration (the IP address is prob
 
 ![administration](kraken-administration.png?raw=true)
 
+## LICENSE
+
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
