@@ -2,7 +2,7 @@
 
 ![kubernetes](kubernetes.png?raw=true)
 
-Kraken is a load testing solution currently deployed on Docker. In order to use several injectors (Gatling) while running a load test, its next version might rely on Kubernetes.
+[Kraken](https://kraken.octoperf.com/) is a [load testing](https://en.wikipedia.org/wiki/Load_testing) solution currently deployed on Docker. In order to use several injectors ([Gatling](https://en.wikipedia.org/wiki/Gatling_(software))) while running a load test, its next version might rely on Kubernetes.
 
 	Kubernetes (commonly referred to as “K8s”) is an open source system that aims to provide a platform for automating the deployment, scalability and implementation of application containers on server clusters. It works with a variety of container technologies, and is often used with Docker. It was originally designed by Google and then offered to the Cloud Native Computing Foundation.
 
