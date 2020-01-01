@@ -6,9 +6,9 @@
 
 	Kubernetes (commonly referred to as “K8s”) is an open source system that aims to provide a platform for automating the deployment, scalability and implementation of application containers on server clusters. It works with a variety of container technologies, and is often used with Docker. It was originally designed by Google and then offered to the Cloud Native Computing Foundation.
 
-This blog post belongs to a series that describe how to use Minikube, declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
+This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
 
-While being the most complex kind of Kubernetes object management, the declarative object configuration allows to apply and revert configuration updates. Also, configuration files can easily be shared or saved into a version control system like Git.
+While being the most complex kind of [Kubernetes object management](https://kubernetes.io/docs/concepts/overview/working-with-objects/object-management/), the declarative object configuration allows to apply and revert configuration updates. Also, configuration files can easily be shared or saved into a version control system like Git.
 
 But before going to the configuration of our frontend and its proxy, let’s see what is needed in order to follow this tutorial.
 
@@ -22,7 +22,7 @@ Executing this blog post code and configuration samples on a local Linux machine
 
 ### Install Kubernetes Command Line Client
 
-First, we need to install Kubectl. I used the version 1.16:
+First, we need to [install Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux). I used the version 1.16:
 
 ```bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
@@ -37,7 +37,7 @@ The kubectl version command should display the 1.16 version.
 
 You can deploy Kubernetes on your machine, but its preferable to do it in a VM when developing. It’s easier to restart from scratch if you made a mistake, or try several configurations without being impacted by remaining objects. Minikube is the tool to test Kubernetes or develop locally.
 
-Download and install Minikube:
+Download and [install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/):
 
 ```bash
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
@@ -51,7 +51,7 @@ Minikube wraps Kubernetes in a Virtual Machine, so it needs an hypervisor: Virtu
 
 Follow this guide to install it on Ubuntu.
 
-#### Check that your CPU supports hardware virtualization
+#### 1. Check that your CPU supports hardware virtualization
 
 To run KVM, you need a processor that supports hardware virtualization. Intel and AMD both have developed extensions for their processors, deemed respectively Intel VT-x (code name Vanderpool) and AMD-V (code name Pacifica). To see if your processor supports one of these, you can review the output from this command: 
 ```bash
