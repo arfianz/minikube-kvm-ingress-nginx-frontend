@@ -6,7 +6,7 @@
 
 	Kubernetes (commonly referred to as “K8s”) is an open source system that aims to provide a platform for automating the deployment, scalability and implementation of application containers on server clusters. It works with a variety of container technologies, and is often used with Docker. It was originally designed by Google and then offered to the Cloud Native Computing Foundation.
 
-This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
+⋅⋅*This blog post belongs to a series that describe how to use [Minikube](https://github.com/kubernetes/minikube), declarative configuration files and the kubectl command-line tool to deploy Docker micro-services on Kubernetes. It focuses on the installation of an Angular 8 frontend application served by an NGinx Ingress controller.
 
 While being the most complex kind of [Kubernetes object management](https://kubernetes.io/docs/concepts/overview/working-with-objects/object-management/), the declarative object configuration allows to apply and revert configuration updates. Also, configuration files can easily be shared or saved into a version control system like Git.
 
