@@ -49,7 +49,7 @@ sudo install minikube /usr/local/bin
 
 Minikube wraps Kubernetes in a Virtual Machine, so it needs an hypervisor: VirtualBox or KVM. Since I do my tests on a small portable computer, I prefer to use the lighter virtualization solution: KVM.
 
-Follow this guide to install it on Ubuntu.
+Follow this guide to install it on Ubuntu:
 
 #### 1. Check that your CPU supports hardware virtualization
 
@@ -87,7 +87,7 @@ You can still run virtual machines, but it'll be much slower without the KVM ext
 NOTE: You may see a message like "KVM acceleration can/can NOT be used". This is misleading and only means if KVM is *currently* available (i.e. "turned on"), *not* if it is supported. 
 
 
-#### Use a 64 bit kernel (if possible)
+#### 2. Use a 64 bit kernel (if possible)
 
 Running a 64 bit kernel on the host operating system is recommended but not required. 
 
@@ -112,7 +112,7 @@ uname -m
 x86_64 indicates a running 64-bit kernel. If you use see i386, i486, i586 or i686, you're running a 32-bit kernel.
 Note: x86_64 is synonymous with amd64. 
 
-#### Installation of KVM
+#### 3. Installation of KVM
 
 For the following setup, we will assume that you are deploying KVM on a server, and therefore do not have any X server on the machine.
 
@@ -129,7 +129,7 @@ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
 
 You might also want to install virt-viewer, for viewing instances. 
 
-#### Add Users to Group
+#### 4. Add Users to Group
 
 The group name is changed to libvirt:
 
@@ -149,7 +149,7 @@ groups
 adm dialout cdrom floppy audio dip video plugdev fuse lpadmin admin sambashare kvm libvirtd
 ```
 
-#### Verify Installation
+#### 5. Verify Installation
 
 You can test if your install has been successful with the following command: 
 
@@ -195,7 +195,7 @@ rmmod kvm
 modprobe -a kvm
 ```
 
-#### Optional: Install virt-manager (graphical user interface)
+#### 6. Optional: Install virt-manager (graphical user interface)
 
 If you are working on a desktop computer you might want to install a GUI tool to manage virtual machines. 
 
@@ -206,7 +206,7 @@ sudo apt-get install virt-manager
 Virtual Machine Manager will appear in Applications -> System Tools menu. First create a new connection to local QEMU instance from File -> Add Connection menu. Localhost (QEMU) or QEMU/KVM should appear in the virtual machine list. Note: there already exist Localhost (QEMU Usermode) connection but this does not work at least on Ubuntu 10.04.
 
 
-Finally install the KVM driver:
+#### Finally [install the KVM driver](https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver):
 
 ```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
@@ -225,9 +225,9 @@ Before continuing, it is best to define some concepts that are unique to Kuberne
 
 ![k8s](./k8s-cluster.png?raw=true)
 
-- A K8s cluster is divided in Nodes. A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
-- When creating an application Deployment, K8s creates one or several Pods on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
-- Theses Pods are regrouped in Services. A Service defines a policy by which to access its targeted pods. For example: 
+- A K8s cluster is divided in [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/). A node is a worker machine and may be a VM or physical machine. In our case, the K8s cluster is composed of a single Node: the Minikube VM.
+- When creating an application [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), K8s creates one or several [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) on the available nodes. A Pod is a group of one or more Docker containers, with shared storage/network, and a specification for how to run the containers.
+- Theses Pods are regrouped in [Services](https://kubernetes.io/docs/concepts/services-networking/service/). A Service defines a policy by which to access its targeted pods. For example: 
 -- A service with the type NodePort exposes the Service on each Node’s IP at a static port. From outside the cluster, the service is accessible by requesting <NodeIP>:<NodePort>.
 -- A LoadBalancer Service exposes the Service externally using the load-balancer of a cloud provider.
 
