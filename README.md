@@ -392,34 +392,45 @@ By default, Kubernetes is configured to expose NodePort services on the port ran
 Start by deleting our existing minikube VM with the command:
 
 ```bash
+$ minikube stop
+✋  Stopping "minikube" in kvm2 ...
+🛑  "minikube" stopped.
+
 $ minikube delete
+🔥  Deleting "minikube" in kvm2 ...
+💔  The "minikube" cluster has been deleted.
+🔥  Successfully deleted profile "minikube"
 ```
 
 Then restart it with the option **apiserver.service-node-port-range=1-30000**:
 
 ```bash
-$ minikube start --vm-driver=kvm2 --extra-config=apiserver.service-node-port-range=1-30000
+$ minikube start --memory 8000 --cpus 2 --vm-driver=kvm2 --extra-config=apiserver.service-node-port-range=1-30000
 😄  minikube v1.6.2 on Ubuntu 18.04
 ✨  Selecting 'kvm2' driver from user configuration (alternates: [virtualbox none])
-💿  Downloading VM boot image ...
-    > minikube-v1.6.0.iso.sha256: 65 B / 65 B [--------------] 100.00% ? p/s 0s
-    > minikube-v1.6.0.iso: 150.93 MiB / 150.93 MiB [ 100.00% 1.01 MiB p/s 2m30s
-🔥  Creating kvm2 VM (CPUs=2, Memory=2000MB, Disk=20000MB) ...
+🔥  Creating kvm2 VM (CPUs=2, Memory=8000MB, Disk=20000MB) ...
 🐳  Preparing Kubernetes v1.17.0 on Docker '19.03.5' ...
     ▪ apiserver.service-node-port-range=1-30000
-💾  Downloading kubelet v1.17.0
-💾  Downloading kubeadm v1.17.0
 🚜  Pulling images ...
 🚀  Launching Kubernetes ... 
 ⌛  Waiting for cluster to come online ...
 🏄  Done! kubectl is now configured to use "minikube"
-
 ```
 
 Start the Ingress Controller and wait for it to start (kubectl get pods -n ingress-nginx --watch):
 
 ```bash
 $ kubectl apply -f ingress/mandatory.yaml
+namespace/ingress-nginx created
+configmap/nginx-configuration created
+configmap/tcp-services created
+configmap/udp-services created
+serviceaccount/nginx-ingress-serviceaccount created
+clusterrole.rbac.authorization.k8s.io/nginx-ingress-clusterrole created
+role.rbac.authorization.k8s.io/nginx-ingress-role created
+rolebinding.rbac.authorization.k8s.io/nginx-ingress-role-nisa-binding created
+clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress-clusterrole-nisa-binding created
+deployment.apps/nginx-ingress-controller created
 ```
 
 Now that we can allocate the port 80, we also need to configure the NodePort service and expose the Ingress controller on this port. First download the configuration file:
@@ -429,6 +440,7 @@ Apply the updated configuration:
 
 ```bash
 $ kubectl apply -f ingress/service-nodeport.yaml 
+service/ingress-nginx created
 ```
 
 Our Ingress Controller is now available on port 80 for HTTP and 443 for HTTPS:
@@ -460,13 +472,106 @@ Remember that you can list Pods with the command **kubectl get pods -n ingress-n
 In case your Pod is stuck with the status **CreatingContainer**, you can display a list of events that may let you know what is going on with the **describe** command:
 
 ```bash
-$ kubectl describe pod nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
+$ kubectl get pods -n ingress-nginx --watch
+NAME                                        READY   STATUS              RESTARTS   AGE
+nginx-ingress-controller-67cff8fb65-nbl9k   0/1     ContainerCreating   0          77s
+
+$ kubectl describe pod nginx-ingress-controller-67cff8fb65-nbl9k -n ingress-nginx
+Name:         nginx-ingress-controller-67cff8fb65-nbl9k
+Namespace:    ingress-nginx
+Priority:     0
+Node:         minikube/192.168.39.51
+Start Time:   Thu, 02 Jan 2020 01:36:32 +0700
+Labels:       app.kubernetes.io/name=ingress-nginx
+              app.kubernetes.io/part-of=ingress-nginx
+              pod-template-hash=67cff8fb65
+Annotations:  prometheus.io/port: 10254
+              prometheus.io/scrape: true
+Status:       Running
+IP:           172.17.0.6
+IPs:
+  IP:           172.17.0.6
+Controlled By:  ReplicaSet/nginx-ingress-controller-67cff8fb65
+Containers:
+  nginx-ingress-controller:
+    Container ID:  docker://7d408ca8d7ff24dd77ca66b834d27bd2cf590bfe8ec44e05b3be6a1756090014
+    Image:         quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0
+    Image ID:      docker-pullable://quay.io/kubernetes-ingress-controller/nginx-ingress-controller@sha256:464db4880861bd9d1e74e67a4a9c975a6e74c1e9968776d8d4cc73492a56dfa5
+    Ports:         80/TCP, 443/TCP
+    Host Ports:    0/TCP, 0/TCP
+    Args:
+      /nginx-ingress-controller
+      --configmap=$(POD_NAMESPACE)/nginx-configuration
+      --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+      --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+      --publish-service=$(POD_NAMESPACE)/ingress-nginx
+      --annotations-prefix=nginx.ingress.kubernetes.io
+    State:          Running
+      Started:      Thu, 02 Jan 2020 01:39:56 +0700
+    Ready:          True
+    Restart Count:  0
+    Liveness:       http-get http://:10254/healthz delay=10s timeout=10s period=10s #success=1 #failure=3
+    Readiness:      http-get http://:10254/healthz delay=0s timeout=10s period=10s #success=1 #failure=3
+    Environment:
+      POD_NAME:       nginx-ingress-controller-67cff8fb65-nbl9k (v1:metadata.name)
+      POD_NAMESPACE:  ingress-nginx (v1:metadata.namespace)
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from nginx-ingress-serviceaccount-token-mgnth (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  nginx-ingress-serviceaccount-token-mgnth:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  nginx-ingress-serviceaccount-token-mgnth
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  3m37s  default-scheduler  Successfully assigned ingress-nginx/nginx-ingress-controller-67cff8fb65-nbl9k to minikube
+  Normal  Pulling    3m36s  kubelet, minikube  Pulling image "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0"
+  Normal  Pulled     14s    kubelet, minikube  Successfully pulled image "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0"
+  Normal  Created    13s    kubelet, minikube  Created container nginx-ingress-controller
+  Normal  Started    13s    kubelet, minikube  Started container nginx-ingress-controller
 ```
 
 Once a Pod is started, you can display the container logs with the command:
 
 ```bash
-$ kubectl logs nginx-ingress-controller-xxxxxxxx-yyyy -n ingress-nginx
+$ kubectl logs nginx-ingress-controller-67cff8fb65-nbl9k -n ingress-nginx
+-------------------------------------------------------------------------------
+NGINX Ingress controller
+  Release:    0.25.0
+  Build:      git-1387f7b7e
+  Repository: https://github.com/kubernetes/ingress-nginx
+-------------------------------------------------------------------------------
+
+W0101 18:39:56.625045       6 flags.go:221] SSL certificate chain completion is disabled (--enable-ssl-chain-completion=false)
+nginx version: openresty/1.15.8.1
+W0101 18:39:56.629523       6 client_config.go:541] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+I0101 18:39:56.629739       6 main.go:183] Creating API client for https://10.96.0.1:443
+I0101 18:39:56.636202       6 main.go:227] Running in Kubernetes cluster version v1.17 (v1.17.0) - git (clean) commit 70132b0f130acc0bed193d9ba59dd186f0e634cf - platform linux/amd64
+I0101 18:39:56.789822       6 main.go:102] Created fake certificate with PemFileName: /etc/ingress-controller/ssl/default-fake-certificate.pem
+E0101 18:39:56.790618       6 main.go:131] v1.17.0
+I0101 18:39:56.809328       6 nginx.go:275] Starting NGINX Ingress controller
+I0101 18:39:56.840665       6 event.go:258] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"nginx-configuration", UID:"7b7873c3-bc67-4ed3-92d0-4da5a230b305", APIVersion:"v1", ResourceVersion:"662", FieldPath:""}): type: 'Normal' reason: 'CREATE' ConfigMap ingress-nginx/nginx-configuration
+I0101 18:39:56.843639       6 event.go:258] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"tcp-services", UID:"070b63b8-4b1e-4b39-b995-fe591b50f480", APIVersion:"v1", ResourceVersion:"665", FieldPath:""}): type: 'Normal' reason: 'CREATE' ConfigMap ingress-nginx/tcp-services
+I0101 18:39:56.844644       6 event.go:258] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"udp-services", UID:"c8c643a2-1218-4fec-94bc-e777d2d6c1c9", APIVersion:"v1", ResourceVersion:"666", FieldPath:""}): type: 'Normal' reason: 'CREATE' ConfigMap ingress-nginx/udp-services
+I0101 18:39:58.010412       6 nginx.go:319] Starting NGINX process
+I0101 18:39:58.010872       6 leaderelection.go:235] attempting to acquire leader lease  ingress-nginx/ingress-controller-leader-nginx...
+I0101 18:39:58.015060       6 controller.go:133] Configuration changes detected, backend reload required.
+I0101 18:39:58.020997       6 leaderelection.go:245] successfully acquired lease ingress-nginx/ingress-controller-leader-nginx
+I0101 18:39:58.021307       6 status.go:86] new leader elected: nginx-ingress-controller-67cff8fb65-nbl9k
+I0101 18:39:58.089260       6 controller.go:149] Backend successfully reloaded.
+I0101 18:39:58.089304       6 controller.go:158] Initial sync, sleeping for 1 second.
+[01/Jan/2020:18:39:59 +0000]TCP200000.001
 ```
 
 ## Deploy an Angular 8 Frontend
@@ -487,12 +592,15 @@ Apply the created configuration with the command:
 
 ```bash
 $ kubectl apply -f frontend/frontend-deployment.yaml
+deployment.apps/frontend-deployment created
 ```
 
 Finally, check that the deployment has started one pod:
 
 ```bash
 $ kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+frontend-deployment   1/1     1            0           79s
 ```
 Here we can see the **READY 1/1** column, it’s the number of Pods ready and the total that must be started.
 
@@ -503,13 +611,17 @@ Like for the Deployment, applying configuration file and apply it. The configura
 Apply it:
 
 ```bash
-$ kubectl apply -f frontend/frontend-service.yaml 
+$ kubectl apply -f frontend/frontend-service.yaml
+service/frontend-service created
 ```
 
 There is no type and no nodePort defined in this service. We only use it to **regroup a logical set of Pods and make them accessible from inside the K8s cluster**.
 
 ```bash
 $ kubectl get services
+NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+frontend-service   ClusterIP   10.96.9.9    <none>        80/TCP    14s
+kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   9m14s
 ```
 
 Here we can see that the **PORT(S)** column display only **80/TCP** for the frontend-service. Not the usual **80:30001/TCP** notation for an exposed port.
@@ -529,13 +641,16 @@ Ingress resources configuration is done using annotations:
 Apply the configuration:
 
 ```bash
-$ kubectl apply -f frontend/frontend-ingress.yaml 
+$ kubectl apply -f frontend/frontend-ingress.yaml
+ingress.extensions/frontend-ingress created
 ```
 
 And check that it is OK:
 
 ```bash
 $ kubectl get ingresses
+NAME               HOSTS   ADDRESS   PORTS   AGE
+frontend-ingress   *                 80      21s
 ```
 
 ## Testing the Installation
@@ -561,6 +676,8 @@ You can display the port mapping with the following command otherwise:
 
 ```bash
 $ kubectl get services -n ingress-nginx
+NAME            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                 AGE
+ingress-nginx   NodePort   10.96.181.195   <none>        80:80/TCP,443:443/TCP   8m31s
 ```
 
 Opening this URL http://192.168.39.51:80/administration (the IP address is probably different for you) in your Web browser display the Kraken administration UI:
