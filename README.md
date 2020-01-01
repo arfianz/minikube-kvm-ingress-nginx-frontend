@@ -160,10 +160,9 @@ virsh list --all
 If on the other hand you get something like this: 
 
 ```bash
-$ virsh list --all
+virsh list --all
 libvir: Remote error : Permission denied
 error: failed to connect to the hypervisor
-$
 ```
 
 Something is wrong (e.g. you did not relogin) and you probably want to fix this before you move on. The critical point here is whether or not you have write access to /var/run/libvirt/libvirt-sock.
@@ -171,14 +170,14 @@ Something is wrong (e.g. you did not relogin) and you probably want to fix this 
 The sock file should have permissions similar to: 
 
 ```bash
-$ sudo ls -la /var/run/libvirt/libvirt-sock
+sudo ls -la /var/run/libvirt/libvirt-sock
 srwxrwx--- 1 root libvirtd 0 2010-08-24 14:54 /var/run/libvirt/libvirt-sock
 ```
 
 Also, /dev/kvm needs to be in the right group. If you see: 
 
 ```bash
-$ ls -l /dev/kvm
+ls -l /dev/kvm
 crw-rw----+ 1 root root 10, 232 Jul  8 22:04 /dev/kvm
 ```
 
